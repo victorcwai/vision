@@ -37,6 +37,7 @@ __all__ = [
     "read_flo",
     "hint_sharding",
     "hint_shuffling",
+    "close_buffer",
 ]
 
 K = TypeVar("K")
@@ -107,6 +108,12 @@ def _path_comparator_closure(data: Tuple[str, Any], *, accessor: Callable[[Tuple
 
 def path_comparator(getter: Union[str, Callable[[pathlib.Path], D]], value: D) -> Callable[[Tuple[str, Any]], bool]:
     return functools.partial(_path_comparator_closure, accessor=path_accessor(getter), value=value)
+
+
+def close_buffer(fn: Callable, buffer: IO) -> Any:
+    result = fn(buffer)
+    buffer.close()
+    return result
 
 
 class PicklerDataPipe(IterDataPipe):
